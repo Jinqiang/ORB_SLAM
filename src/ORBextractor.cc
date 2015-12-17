@@ -558,7 +558,6 @@ void ORBextractor::ComputeKeyPoints(vector<vector<KeyPoint> >& allKeypoints)
 
 
         float hY = cellH + 6;
-        float hX = cellW + 6;
 
         for(int i=0; i<levelRows; i++)
         {
@@ -566,7 +565,13 @@ void ORBextractor::ComputeKeyPoints(vector<vector<KeyPoint> >& allKeypoints)
             iniYRow[i] = iniY;
 
             if(i == levelRows-1)
+            {
                 hY = maxBorderY+3-iniY;
+                if(hY<=0)
+                    continue;
+            }
+            
+            float hX = cellW + 6;
 
             for(int j=0; j<levelCols; j++)
             {
@@ -584,7 +589,11 @@ void ORBextractor::ComputeKeyPoints(vector<vector<KeyPoint> >& allKeypoints)
 
 
                 if(j == levelCols-1)
+                {
                     hX = maxBorderX+3-iniX;
+                    if(hX<=0)
+                        continue;
+                }
 
 
                 Mat cellImage = mvImagePyramid[level].rowRange(iniY,iniY+hY).colRange(iniX,iniX+hX);

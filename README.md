@@ -6,7 +6,11 @@ See our project webpage: http://webdiis.unizar.es/~raulmur/orbslam/
 
 ###Related Publications:
 
-[1] Raúl Mur-Artal, J. M. M. Montiel and Juan D. Tardós. **ORB-SLAM: A Versatile and Accurate Monocular SLAM System**. *Submitted to IEEE Transactions on Robotics. arXiv preprint: http://arxiv.org/abs/1502.00956*
+[1] Raúl Mur-Artal, J. M. M. Montiel and Juan D. Tardós. **ORB-SLAM: A Versatile and Accurate Monocular SLAM System**. *IEEE Transactions on Robotics,* vol. 31, no. 5, pp. 1147-1163, 2015. 
+
+DOI: 10.1109/TRO.2015.2463671.
+
+Link to pdf: http://webdiis.unizar.es/~raulmur/MurMontielTardosTRO15.pdf
 
 
 #1. License
@@ -17,10 +21,14 @@ For a closed-source version of ORB-SLAM for commercial purposes, please contact 
 
 If you use ORB-SLAM in an academic work, please cite:
 
-    @article{murSubTro2015,
+    @article{murAcceptedTRO2015,
       title={{ORB-SLAM}: a Versatile and Accurate Monocular {SLAM} System},
       author={Mur-Artal, Ra\'ul, Montiel, J. M. M. and Tard\'os, Juan D.},
-      journal={Submitted to IEEE Transaction on Robotics. arXiv preprint arXiv:1502.00956},
+      journal={IEEE Transactions on Robotics},
+      volume={31},
+      number={5},
+      pages={1147--1163},
+      doi = {10.1109/TRO.2015.2463671},
       year={2015}
      }
 
@@ -35,8 +43,10 @@ We use the Boost library to launch the different threads of our SLAM system.
 
 ##2.2 ROS
 We use ROS to receive images from the camera or from a recorded sequence (rosbag), and for visualization (rviz, image_view). 
-**We have tested ORB-SLAM in Ubuntu 12.04 with ROS Fuerte, Groovy and Hydro**. 
+**We have tested ORB-SLAM in Ubuntu 12.04 with ROS Fuerte, Groovy and Hydro; and in Ubuntu 14.04 with ROS Indigo**. 
 If you do not have already installed ROS in your computer, we recommend you to install the Full-Desktop version of ROS Fuerte (http://wiki.ros.org/fuerte/Installation/Ubuntu).
+
+**If you use ROS Indigo, remove the depency of opencv2 in the manifest.xml.**
 
 ##2.3 g2o (included)
 We use g2o to perform several optimizations. We include a modified copy of the library including only the components we need 
@@ -49,8 +59,7 @@ In order to compile g2o you will need to have installed CHOLMOD, BLAS, LAPACK an
 	sudo apt-get install libeigen3-dev
 
 ##2.4 DBoW2 (included)
-We make use of some components of the DBoW2 library for place recognition and feature matching. We include a modified copy of the library
-including only the components we need and also some modifications that are listed in `Thirdparty/DBoW2/LICENSE.txt`. 
+We make use of some components of the DBoW2 library (https://github.com/dorian3d/DBoW2) for place recognition and feature matching. We include a modified copy of the library including only the components we need and also some modifications that are listed in `Thirdparty/DBoW2/LICENSE.txt`. 
 It only depends on OpenCV, but it should be included in the ROS distribution.
 
 
@@ -58,11 +67,13 @@ It only depends on OpenCV, but it should be included in the ROS distribution.
 
 1. Make sure you have installed ROS and all library dependencies (boost, eigen3, cholmod, blas, lapack).
 
-2. In your ROS package path (check your environment variable `ROS_PACKAGE_PATH`) clone this repository:
+2. Clone the repository:
 
 		git clone https://github.com/raulmur/ORB_SLAM.git ORB_SLAM
+		
+3. Add the path where you cloned ORB-SLAM to the `ROS_PACKAGE_PATH` environment variable (better if you add the export line to your .bashrc file)
 
-3. Build g2o. Go into `Thirdparty/g2o/` and execute:
+4. Build g2o. Go into `Thirdparty/g2o/` and execute:
 
 		mkdir build
 		cd build
@@ -72,7 +83,7 @@ It only depends on OpenCV, but it should be included in the ROS distribution.
 	*Tip: To achieve the best performance in your computer, set your favorite compilation flags in line 97 and 98 of* `Thirdparty/g2o/CMakeLists.txt` 
 		  (by default -03 -march=native)
 
-4. Build DBoW2. Go into Thirdparty/DBoW2/ and execute:
+5. Build DBoW2. Go into Thirdparty/DBoW2/ and execute:
 
 		mkdir build
 		cd build
@@ -81,14 +92,16 @@ It only depends on OpenCV, but it should be included in the ROS distribution.
 
 	*Tip: Set your favorite compilation flags in line 4 and 5 of* `Thirdparty/DBoW2/CMakeLists.txt` (by default -03 -march=native)
 
-5. Build ORB_SLAM. In the ORB_SLAM root execute:
+6. Build ORB_SLAM. In the ORB_SLAM root execute:
+
+	**If you use ROS Indigo, remove the depency of opencv2 in the manifest.xml.**
 
 		mkdir build
 		cd build
 		cmake .. -DROS_BUILD_TYPE=Release
 		make
 
-	*Tip: Set your favorite compilation flags in line 12 and 13 of* `Thirdparty/DBoW2/CMakeLists.txt` (by default -03 -march=native)
+	*Tip: Set your favorite compilation flags in line 12 and 13 of* `./CMakeLists.txt` (by default -03 -march=native)
 
 #4. Usage
 
@@ -99,7 +112,7 @@ It only depends on OpenCV, but it should be included in the ROS distribution.
 		rosrun ORB_SLAM ORB_SLAM PATH_TO_VOCABULARY PATH_TO_SETTINGS_FILE
 
   You have to provide the path to the ORB vocabulary and to the settings file. The paths must be absolute or relative   to the ORB_SLAM directory.  
-  We already provide the vocabulary file we use in `ORB_SLAM/Data/ORBvoc.yml`. Uncompress the file, as it will be   loaded much faster.
+  We already provide the vocabulary file we use in `ORB_SLAM/Data/ORBvoc.txt.tar.gz`. Uncompress the file, as it will be loaded much faster.
 
 2. The last processed frame is published to the topic `/ORB_SLAM/Frame`. You can visualize it using `image_view`:
 
@@ -111,7 +124,7 @@ It only depends on OpenCV, but it should be included in the ROS distribution.
 
 		rosrun rviz rviz -d Data/rviz.vcg
 
-	*in ROS Groovy or Hydro*:
+	*in ROS Groovy or a newer version*:
 
 		rosrun rviz rviz -d Data/rviz.rviz
 
@@ -125,9 +138,9 @@ If you have a sequence with individual image files, you will need to generate a 
 
 	roslaunch ExampleFuerte.launch
 
-*in ROS Groovy or Hydro*:
+*in ROS Groovy or a newer version*:
 
-	roslaunch ExampleGroovyHydro.launch
+	roslaunch ExampleGroovyOrNewer.launch
 
 
 #5. Example Sequence
@@ -140,7 +153,7 @@ We provide the settings and the rosbag of an example sequence in our lab. In thi
 
 	Uncompress the file.
 
-2. Launch ORB_SLAM with the settings for the example sequence. You should have already uncompressed the vocabulary file (`/Data/ORBvoc.yml.tar.gz`)
+2. Launch ORB_SLAM with the settings for the example sequence. You should have already uncompressed the vocabulary file (`/Data/ORBvoc.txt.tar.gz`)
 
   *in ROS Fuerte*:
 
